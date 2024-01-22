@@ -9,6 +9,7 @@ const { fetchBookInfo } = require('./bookInfo')
 const { fetchDataForDate } = require('./currencyInfo')
 const { filterBooks } = require('./filterResults')
 const { formatFullResults } = require('./formatFullResults')
+const { formatInput } = require('./formatInput')
 
 const app = express()
 const port = 3000
@@ -21,31 +22,39 @@ app.get('/', (req, res) => {
   res.sendFile(indexPath)
 })
 
-app.post('/fetchBookInfo', (req, res) => {
-  const { author, title, country } = req.body
+app.post('/fetchBookInfo', async (req, res) => {
+  try {
+    const { input } = req.body
+    console.log('\n \n \n  INPUT:', input)
+    const formatedInput = formatInput(input)
+    console.log('\n \n \n formated', formatedInput)
 
-  const fetchBookInfoPromise = new Promise(async (resolve, reject) => {
-    try {
+    const fullResultsArray = []
+
+    for (const book of formatedInput) {
+      const { author, title } = book
+      console.log('\n \n \n book :', book)
+      const country = 'US'
       const bookResult = await fetchBookInfo(author, title, country)
-
       if (!bookResult) {
         throw new Error('Book info not available.')
       }
 
       const filteredBooks = filterBooks(bookResult, author, title)
-
+      console.log('\n \n \n book results:', filteredBooks)
       const dateToFetch = filteredBooks.date
 
       const currencyResult = await fetchDataForDate(dateToFetch)
-
       const fullResults = formatFullResults(filteredBooks, currencyResult)
 
-      res.json(fullResults)
-    } catch (error) {
-      console.error('Error fetching book info:', error.message)
-      res.status(500).json({ success: false, error: error.message })
+      fullResultsArray.push(fullResults)
     }
-  })
+
+    res.json(fullResultsArray)
+  } catch (error) {
+    console.error('Error fetching book info:', error.message)
+    res.status(500).json({ success: false, error: error.message })
+  }
 })
 
 app.listen(port, () => {

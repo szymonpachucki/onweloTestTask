@@ -3,55 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="index.css">
   <title>Fetch Book Info</title>
 </head>
 <body>
-    <form action="/fetchBookInfo" method="post" id="bookForm">
-        <label for="author">Author:</label>
-        <input type="text" id="author" name="author" required>
+  <h1>Book data should be in this format:</h1>
+  <h4>"Agatha Christie","The Mysterious Affair at Styles",
+    "Agatha Christie","The Secret Adversary",
+    "Agatha Christie","And Then There Were None",
+    "Agatha Christie","Murder on the Orient Express",
+    "Agatha Christie","The Murder of Roger Ackroyd",
+    "Agatha Christie","Death on the Nile"
+    </h4>
+    <form
+      action="/fetchBookInfo"
+      method="post"
+      id="bookForm"
+      class="form"
+      >
+        <label class="form__label" for="author">Input book data:</label>
+        <input
+          class="form__input"
+          type="text"
+          id="author"
+          name="author"
+          required>
     
-        <label for="title">Title:</label>
-        <input type="text" id="title" name="title" required>
-    
-        <label for="country">Country:</label>
-        <input type="text" id="country" name="country" required>
-    
-        <button type="button" onclick="fetchBook()">Submit</button>
+        <button class="form__button" type="button" onclick="fetchBook()">Submit</button>
       </form>
 
-  <div id="results" style="display:flex;flex-wrap: wrap;"></div>
+  <div class="book" id="results" style="display:flex;flex-wrap: wrap;"></div>
 
   <script>
-        let resultsArr = [];
-        function displayResults(results) {
-      resultsArr.push(results);
-
-      const resultsContainer = document.getElementById('results');
-      resultsContainer.innerHTML = '';
-
-      resultsArr.forEach(result => {
-        resultsContainer.innerHTML += `
-          <div style="background:#eee;width:200px;">
-            <img src=${result.img}>
-            <p><strong>Author:</strong> ${result.name}</p>
-            <p><strong>Title:</strong> ${result.title}</p>
-            <p><strong>Country:</strong> ${result.curr}</p>
-            <p><strong>Date:</strong> ${result.date}</p>
-            <p><strong>Currency Info:</strong></p>
-            <ul>
-              <li><p><strong>Table Number:</strong> ${result.fromNBP.tableNo}</p></li>
-              <li><p><strong>Rate:</strong> ${result.fromNBP.rate}</p></li>
-              <li><p><strong>Price in PLN:</strong> ${result.fromNBP.pricePLN}</p></li>
-            </ul>
-          </div>
-        `;
-      });
-    }
-async function fetchBook() {
+    async function fetchBook() {
       event.preventDefault();
-      const author = document.getElementById('author').value;
-      const title = document.getElementById('title').value;
-      const country = document.getElementById('country').value;
+      const input = document.getElementById('author').value;
+
 
       try {
         const response = await fetch('/fetchBookInfo', {
@@ -59,7 +46,12 @@ async function fetchBook() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ author, title, country }),
+          body: JSON.stringify({ input }, (key, value) => {
+  if (typeof value === 'string' && value.includes('\n')) {
+    return value;
+  }
+  return value;
+}),
         });
 
         if (!response.ok) {
@@ -72,6 +64,29 @@ async function fetchBook() {
       } catch (error) {
         console.error('Error:', error);
       }
+    }
+
+    function displayResults(results) {
+      const resultsContainer = document.getElementById('results');
+      resultsContainer.innerHTML = '';
+
+      results.forEach(result => {
+        resultsContainer.innerHTML += `
+          <div class="book__item" style="background:#eee;width:200px;">
+            <img class="book__item-img" src=${result.img}>
+            <p class="book__item-txt"><strong>Author:</strong> ${result.name}</p>
+            <p class="book__item-txt"><strong>Title:</strong> ${result.title}</p>
+            <p class="book__item-txt"><strong>Country:</strong> ${result.curr}</p>
+            <p class="book__item-txt"><strong>Date:</strong> ${result.date}</p>
+            <p class="book__item-txt"><strong>Currency Info:</strong></p>
+            <ul>
+              <li class="book__item-list"><p><strong>Table Number:</strong> ${result.fromNBP.tableNo}</p></li>
+              <li class="book__item-list"><p><strong>Rate:</strong> ${result.fromNBP.rate}</p></li>
+              <li class="book__item-list"><p><strong>Price in PLN:</strong> ${result.fromNBP.pricePLN}</p></li>
+            </ul>
+          </div>
+        `;
+      });
     }
   </script>
 </body>

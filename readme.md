@@ -1,5 +1,9 @@
-Hi, I created this app with a slightly different approach. In my version, you input data for one book at a time. I did this because I am not sure about the precise use case for this app; I assumed it would be a tool for customers wanting to learn more about individual books.
+Fetch Book Info App
+This web application is designed to provide information about books, including details about the author, title, and currency information as well as book cover. MY app allows you to input several books in one search you just need to input them in this format:
+"author1", "title1","author2", "title2".
 
-I noticed that the NBP API does not work well for older books, so I thought it might be confusing if users searched for a lot of books at once. If needed, it can be easily changed by modifying the form component and adding a function to format the inputted text into an array of objects with keys as author and title. Then, you can run the fetchBookInfo function for all of them.
+Handling Missing Data
+It's important to note that the NBP (National Bank of Poland) API does not provide data for certain dates, especially for older books. In cases where currency data cannot be retrieved, the app displays 'no data' to inform users that the information is not available.
 
-As for the frontend, I kept it to a basic minimum since this position primarily focuses on backend development. If the task required both frontend and backend development, I would utilize SCSS and BEM for CSS, and React for JavaScript and HTML.
+Frontend Considerations
+The frontend of the application has been kept to a basic minimum, aligning with the primary focus on backend development for this project. If the scope were to include both frontend and backend development, additional technologies such as SCSS for CSS, BEM for naming conventions, and React for JavaScript and HTML could be incorporated to enhance the user interface and overall user experience.
